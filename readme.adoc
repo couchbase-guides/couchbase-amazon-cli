@@ -1,6 +1,8 @@
-= Configure Couchase on Amazon Using CLI
+= Run Couchase on Amazon EC2 Using CLI
 
-[https://aws.amazon.com/marketplace/seller-profile?id=1a064a14-5ac2-4980-9167-15746aabde72]Several Couchbase AMIs allow to easily get started with Couchbase on Amazon EC2. This starter guide shows how to get started with Couchbase Server 4.5 CE on EC2. We'll use Ubuntu 14.04 LTS for this guide. AWS CLI and Couchbase CLI will be used for configuration.
+https://aws.amazon.com/marketplace/seller-profile?id=1a064a14-5ac2-4980-9167-15746aabde72[Several Couchbase AMIs] allow to easily get started with Couchbase on Amazon EC2. This starter guide shows how to get started with Couchbase Server 4.5 CE on EC2.
+
+We'll use Ubuntu 14.04 LTS for this guide. AWS CLI and Couchbase CLI will be used for configuration.
 
 == AWS CLI
 
