@@ -1,6 +1,6 @@
 = Configure Couchase on Amazon Using CLI
 
-[ADD LINK]Several Couchbase AMIs allow to easily get started with Couchbase on Amazon EC2. This starter guide shows how to get started with a specific version of Couchbase on EC2. We'll install Couchbase Server 4.5 CE and Ubuntu 14.04 LTS for this guide using AWS CLI and Couchbase CLI.
+[https://aws.amazon.com/marketplace/seller-profile?id=1a064a14-5ac2-4980-9167-15746aabde72]Several Couchbase AMIs allow to easily get started with Couchbase on Amazon EC2. This starter guide shows how to get started with Couchbase Server 4.5 CE on EC2. We'll use Ubuntu 14.04 LTS for this guide. AWS CLI and Couchbase CLI will be used for configuration.
 
 == AWS CLI
 
@@ -29,6 +29,8 @@ aws ec2 create-security-group --group-name CouchbaseSecurityGroup --description 
 | 11210 | SDKs and memcached
 |====
 +
+Complete set of ports is listed at https://developer.couchbase.com/documentation/server/current/install/install-ports.html[Network Configuration].
++
 This can be done by invoking the following command:
 +
 ```
@@ -39,25 +41,23 @@ aws ec2 authorize-security-group-ingress --group-name CouchbaseSecurityGroup --p
 aws ec2 authorize-security-group-ingress --group-name CouchbaseSecurityGroup --protocol tcp --port 8094 --cidr 0.0.0.0/0
 aws ec2 authorize-security-group-ingress --group-name CouchbaseSecurityGroup --protocol tcp --port 11210 --cidr 0.0.0.0/0
 ```
-+
-The complete set of ports is listed at https://developer.couchbase.com/documentation/server/current/install/install-ports.html[Network Configuration].
 
 == Launch EC2 Instance
 
-Complete list of supported platforms for Couchbase is listed at http://coucbase.com/downloads[coucbase.com/downloads]. Launch an Ubuntu instance:
-
+. Complete list of supported platforms for Couchbase is listed at http://coucbase.com/downloads[coucbase.com/downloads]. Launch an Ubuntu instance:
++
 ```
 aws ec2 run-instances --image-id ami-cee95aae --count 1 --instance-type m3.xlarge --key-name arun-cb-west2 --security-groups "CouchbaseSecurityGroup"
 ```
-
-. AMI ID is for 14.04 LTS with HVM EBS-SSD as specified by `--image-id`. This AMI will only work in `us-west-2` zone. Find the Ubuntu AMI ID for your zone at https://cloud-images.ubuntu.com/locator/ec2/.
-. One instance of Couchbase server is started as specified by `--count` option
-. `m3.xlarge` is 4 vCPUs and 15 GB RAM.
-. Security key pair can be created as explained in http://docs.aws.amazon.com/cli/latest/reference/ec2/create-key-pair.html[create-key-pair]. It is used with `--key-name` option.
-. Previously created securit group is specified with `--security-groups` option.
-
-Find public IP address of the EC2 instance:
-
++
+.. `--image-id` is the AMI ID is for 14.04 LTS with HVM EBS-SSD. This AMI will only work in `us-west-2` zone. Complete list of AMI ID for your zone at https://cloud-images.ubuntu.com/locator/ec2/.
+.. One instance of Couchbase server is started as specified by `--count` option
+.. `m3.xlarge` is 4 vCPUs and 15 GB RAM.
+.. Security key pair can be created as explained in http://docs.aws.amazon.com/cli/latest/reference/ec2/create-key-pair.html[create-key-pair]. It is used with `--key-name` option.
+.. Previously created security group is specified with `--security-groups` option.
++
+. Find public IP address of the EC2 instance:
++
 ```
 aws ec2 describe-instances --query 'Reservations[*].Instances[*].[PublicDnsName]' --filters Name=instance-state-name,Values=running --output text
 ```
@@ -67,7 +67,7 @@ aws ec2 describe-instances --query 'Reservations[*].Instances[*].[PublicDnsName]
 . Login to the EC2 instance: `ssh -i <key> -o StrictHostKeyChecking=no ubuntu@<public-ip>`. A sample command would look like:
 +
 ```
-ssh -i ~/.ssh/arun-cb-west2.pem -o StrictHostKeyChecking=no ubuntu@ec2-35-165-171-117.us-west-2.compute.amazonaws.com
+ssh -i ~/.ssh/arun-cb-west2.pem -o StrictHostKeyChecking=no ubuntu@ec2-35-163-165-170.us-west-2.compute.amazonaws.com
 ```
 +
 . Download latest Couchbase CE: `wget http://packages.couchbase.com/releases/4.5.0/couchbase-server-community_4.5.0-ubuntu14.04_amd64.deb`
@@ -79,15 +79,13 @@ Configure Couchbase using https://developer.couchbase.com/documentation/server/c
 
 ```
 /opt/couchbase/bin/couchbase-cli \
-        cluster-init \
-        -c ec2-35-165-171-117.us-west-2.compute.amazonaws.com:8091 \
-        -u Administrator \
-        -p password \
-        --cluster-username Administrator \
-        --cluster-password password \
-        --cluster-ramsize=2048 \
-        --cluster-index-ramsize=2048 \
-        --services=data,index,query,fts
+    cluster-init \
+    -c ec2-35-163-165-170.us-west-2.compute.amazonaws.com:8091 \
+    -u Administrator \
+    -p password \
+    --cluster-ramsize=2048 \
+    --cluster-index-ramsize=2048 \
+    --services=data,index,query,fts
 ```
 
 to see a message like:
@@ -101,12 +99,25 @@ In this command:
 . `cluster-init` sets the user name, password, port, RAM size and services for a cluster
 . `-u` is admin user name of the cluster
 . `-p` is admin password of the cluster
-. `--cluster-username` is used to specify the user name for cluster. This is the first node in the cluster and so this need to be specified.
-. `--cluster-password` is used to specify the password for the cluster.
 . `--cluster-ramsize` defines the per node RAM quota for the Data service
 . `--cluster-index-ramsize` defines the per node RAM quota for the Index service
 . `--services` defines the services that runs on this cluster
 
-Configure Couchbase for data, index, query and search service. This also configures the admin credentials
+== Access Couchbase
 
-Couchbase Server is now ready to roll. Couchbase Web Console is accessible at http://<public-ip>:8091.
+Couchbase is now accessible at http://<public-ip>:8091. Web Console looks like:
+
+image::images/couchbase-amazon-cli-login.png[]
+
+Enter the user name `Administrator` and password as `password`. This was configured in our commend previously.
+
+Default Couchbase Web Console looks like:
+
+image::images/couchbase-amazon-cli-web-console.png[]
+
+Clicking on the `Server` tab shows more details about the node:
+
+image::images/couchbase-amazon-cli-web-console-server.png[]
+
+Enjoy!
+
