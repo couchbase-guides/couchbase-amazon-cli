@@ -74,7 +74,7 @@ ssh -i ~/.ssh/arun-cb-west2.pem -o StrictHostKeyChecking=no ubuntu@ec2-35-163-16
 +
 . Download latest Couchbase CE: `wget http://packages.couchbase.com/releases/4.5.0/couchbase-server-community_4.5.0-ubuntu14.04_amd64.deb`
 +
-This starter kit is using Couchbase CE as convenience. It's strongly recommended to download Couchbase EE instead from https://www.couchbase.com/downloads. It requires to complete a registration form.
+This starter kit is using Couchbase CE as convenience. It's strongly recommended to download Couchbase EE instead from https://www.couchbase.com/downloads. It requires to complete a simple registration form.
 +
 . Install Couchbase: `sudo dpkg -i couchbase-server-community_4.5.0-ubuntu14.04_amd64.deb`
 
@@ -93,10 +93,12 @@ Configure Couchbase using https://developer.couchbase.com/documentation/server/c
     --services=data,index,query,fts
 ```
 
-to see a message like:
+Make sure to replace the public IP address with your own.
+
+This will show a message like:
 
 ```
-SUCCESS: init/edit ec2-35-165-171-117.us-west-2.compute.amazonaws.com
+SUCCESS: init/edit ec2-35-163-165-170.us-west-2.compute.amazonaws.com
 ```
 
 In this command:
@@ -120,9 +122,13 @@ Default Couchbase Web Console looks like:
 
 image::images/couchbase-amazon-cli-web-console.png[]
 
+There is only one active server. RAM and Disk overview of Data nodes is shown.
+
 Clicking on the `Server` tab shows more details about the node:
 
 image::images/couchbase-amazon-cli-web-console-server.png[]
+
+Data, Full Text, Index and Query services are enabled for the node.
 
 Enjoy!
 
